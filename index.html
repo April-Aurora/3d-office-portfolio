@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#bab7b3" />
+    <meta name="description" content="晓桐的 3D 创作工作室与个人作品集。" />
+    <title>晓桐的创作房间</title>
+  </head>
+  <body>
+    <main id="app">
+      <canvas id="scene" aria-label="可拖动探索的三维工作室"></canvas>
+
+      <header class="site-header">
+        <div class="wordmark" aria-label="晓桐的创作房间">
+          <span class="wordmark-title">晓桐的创作房间</span>
+          <span class="wordmark-subtitle">XIAOTONG'S CREATIVE ROOM</span>
+        </div>
+        <div class="header-actions">
+          <button class="time-toggle" type="button" aria-pressed="false">
+            <span>打开晚灯</span>
+            <strong id="time-label">10:26</strong>
+          </button>
+          <button class="reset-view" type="button">回到全景</button>
+        </div>
+      </header>
+
+      <nav class="object-dock" aria-label="探索工作室">
+        <p>探索物件</p>
+        <div class="dock-actions">
+          <button type="button" data-focus="computer" aria-pressed="false">
+            <span class="dock-mark dock-mark-screen" aria-hidden="true"></span>
+            <span>作品集</span>
+          </button>
+          <button type="button" data-focus="book" aria-pressed="false">
+            <span class="dock-mark dock-mark-book" aria-hidden="true"></span>
+            <span>书本</span>
+          </button>
+          <button type="button" data-focus="shelf" aria-pressed="false">
+            <span class="dock-mark dock-mark-shelf" aria-hidden="true"></span>
+            <span>档案</span>
+          </button>
+          <button type="button" data-focus="camera" aria-pressed="false">
+            <span class="dock-mark dock-mark-camera" aria-hidden="true"></span>
+            <span>胶卷</span>
+          </button>
+          <button type="button" data-focus="lamp" aria-pressed="false">
+            <span class="dock-mark dock-mark-lamp" aria-hidden="true"></span>
+            <span>光线</span>
+          </button>
+        </div>
+      </nav>
+
+      <section class="story-panel" aria-hidden="true" aria-live="polite">
+        <button class="story-close" type="button" aria-label="关闭内容面板">×</button>
+        <p id="story-eyebrow"></p>
+        <h1 id="story-title"></h1>
+        <p id="story-body"></p>
+        <small id="story-meta"></small>
+      </section>
+
+      <section class="portfolio-shell" role="dialog" aria-modal="true" aria-label="晓桐的作品集" aria-hidden="true">
+        <div class="portfolio-window">
+          <header class="portfolio-header">
+            <a class="portfolio-name" href="#portfolio-top">WANG XIAOTONG</a>
+            <nav aria-label="作品集章节">
+              <a href="#selected-work">作品</a>
+              <a href="#about-me">关于</a>
+            </nav>
+            <button class="portfolio-close" type="button" aria-label="关闭作品集" title="关闭作品集">×</button>
+          </header>
+
+          <div class="portfolio-scroll" id="portfolio-top">
+            <section class="portfolio-intro">
+              <p class="portfolio-kicker">PORTFOLIO · 2026</p>
+              <h1>把观察变成<br />可以进入的作品。</h1>
+              <p class="portfolio-lead">关注叙事、视觉与数字体验。这里将收录我的代表项目、研究过程和持续发生的小实验。</p>
+              <span class="portfolio-index">01—04</span>
+            </section>
+
+            <section class="portfolio-projects" id="selected-work" aria-label="精选作品">
+              <article class="portfolio-project project-coral">
+                <div class="project-visual" aria-hidden="true"><span>01</span><i></i><b></b></div>
+                <div class="project-copy">
+                  <p>数字体验 · 项目信息待补充</p>
+                  <h2>作品名称待补充</h2>
+                  <span>交互 / 视觉 / 研究</span>
+                </div>
+              </article>
+              <article class="portfolio-project project-mint">
+                <div class="project-visual" aria-hidden="true"><span>02</span><i></i><b></b></div>
+                <div class="project-copy">
+                  <p>叙事研究 · 项目信息待补充</p>
+                  <h2>作品名称待补充</h2>
+                  <span>策划 / 写作 / 编辑</span>
+                </div>
+              </article>
+              <article class="portfolio-project project-yellow">
+                <div class="project-visual" aria-hidden="true"><span>03</span><i></i><b></b></div>
+                <div class="project-copy">
+                  <p>空间实验 · 项目信息待补充</p>
+                  <h2>作品名称待补充</h2>
+                  <span>概念 / 空间 / 制作</span>
+                </div>
+              </article>
+            </section>
+
+            <section class="portfolio-about" id="about-me">
+              <p>ABOUT</p>
+              <h2>我的具体介绍与联系方式待补充。</h2>
+              <span>xiaotong · portfolio</span>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <section class="sketchbook-shell experience-shell" role="dialog" aria-modal="true" aria-label="自由画册" aria-hidden="true">
+        <div class="sketchbook-window">
+          <header class="experience-header sketchbook-header">
+            <div>
+              <strong>随手画册</strong>
+              <span>INK ON PAPER</span>
+            </div>
+            <div class="sketch-tools" role="toolbar" aria-label="画笔工具">
+              <button class="sketch-tool is-active" type="button" data-sketch-tool="pen" aria-pressed="true">画笔</button>
+              <button class="sketch-tool" type="button" data-sketch-tool="eraser" aria-pressed="false">橡皮</button>
+              <label class="sketch-size-label" for="sketch-size">粗细</label>
+              <input id="sketch-size" class="sketch-size" type="range" min="1" max="18" value="4" />
+              <button class="sketch-undo" type="button">撤销</button>
+              <button class="sketch-clear" type="button">清空</button>
+              <button class="sketch-save" type="button">保存</button>
+            </div>
+            <button class="experience-close sketchbook-close" type="button" aria-label="关闭画册" title="关闭画册">×</button>
+          </header>
+          <div class="sketchbook-stage">
+            <div class="sketchbook-paper">
+              <canvas id="sketch-canvas" aria-label="可以自由写字画画的空白双页画布"></canvas>
+              <span class="sketch-spine" aria-hidden="true"></span>
+              <span class="page-number page-number-left">12</span>
+              <span class="page-number page-number-right">13</span>
+            </div>
+            <p class="sketch-hint">拖动笔尖，在纸上留下你的想法</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="film-shell experience-shell" role="dialog" aria-modal="true" aria-label="胶卷照片集" aria-hidden="true">
+        <div class="film-window">
+          <header class="experience-header film-header">
+            <div>
+              <strong>未冲洗的片段</strong>
+              <span>CONTACT SHEET · SAMPLE ASSETS</span>
+            </div>
+            <div class="film-controls">
+              <button class="film-prev" type="button" aria-label="上一张照片">←</button>
+              <span class="film-count" aria-live="polite">01 / 06</span>
+              <button class="film-next" type="button" aria-label="下一张照片">→</button>
+            </div>
+            <button class="experience-close film-close" type="button" aria-label="关闭胶卷" title="关闭胶卷">×</button>
+          </header>
+          <div class="film-viewport" tabindex="0" aria-label="横向滚动浏览照片">
+            <div class="film-strip">
+              <figure class="film-frame">
+                <img src="./assets/film/architecture.jpg" alt="示例照片：建筑与空间" />
+                <figcaption><span>01</span><strong>空间观察</strong><small>示例素材，可替换</small></figcaption>
+              </figure>
+              <figure class="film-frame">
+                <img src="./assets/film/studio-shadow.jpg" alt="示例照片：工作室光影" />
+                <figcaption><span>02</span><strong>午后光影</strong><small>示例素材，可替换</small></figcaption>
+              </figure>
+              <figure class="film-frame">
+                <img src="./assets/film/chair-detail.jpg" alt="示例照片：家具细节" />
+                <figcaption><span>03</span><strong>物件轮廓</strong><small>示例素材，可替换</small></figcaption>
+              </figure>
+              <figure class="film-frame">
+                <img src="./assets/film/city-window.jpg" alt="示例照片：城市窗口" />
+                <figcaption><span>04</span><strong>窗外片段</strong><small>示例素材，可替换</small></figcaption>
+              </figure>
+              <figure class="film-frame">
+                <img src="./assets/film/ceramic-table.jpg" alt="示例照片：桌面静物" />
+                <figcaption><span>05</span><strong>桌面静物</strong><small>示例素材，可替换</small></figcaption>
+              </figure>
+              <figure class="film-frame">
+                <img src="./assets/film/night-sign.jpg" alt="示例照片：夜间灯光" />
+                <figcaption><span>06</span><strong>夜间信号</strong><small>示例素材，可替换</small></figcaption>
+              </figure>
+            </div>
+          </div>
+          <footer class="film-footer"><span>滚轮 / 拖动 / 方向键</span><span>把真实照片替换到 public/assets/film</span></footer>
+        </div>
+      </section>
+
+      <div class="scene-status" aria-live="polite">
+        <span id="status-kicker">作品集在屏幕里</span>
+        <strong id="status-text">桌上的物件也各自藏着一段内容</strong>
+      </div>
+
+      <div class="loading-screen" aria-live="polite">
+        <div class="loading-copy">
+          <div>
+            <span>正在打开创作房间</span>
+            <small>桌面、作品与日光正在归位</small>
+          </div>
+          <strong id="loading-value">0%</strong>
+        </div>
+        <div class="loading-track"><span></span></div>
+      </div>
+    </main>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
