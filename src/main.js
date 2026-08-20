@@ -30,6 +30,9 @@ const storyMeta = document.querySelector("#story-meta");
 const timeToggle = document.querySelector(".time-toggle");
 const timeLabel = document.querySelector("#time-label");
 const portfolioShell = document.querySelector(".portfolio-shell");
+const portfolioWindow = document.querySelector(".portfolio-window");
+const portfolioFrame = document.querySelector(".portfolio-frame");
+const portfolioLoading = document.querySelector(".portfolio-loading");
 const portfolioClose = document.querySelector(".portfolio-close");
 const sketchbookShell = document.querySelector(".sketchbook-shell");
 const sketchbookClose = document.querySelector(".sketchbook-close");
@@ -161,6 +164,7 @@ let sketchHistory = [];
 let filmDragging = false;
 let filmDragStartX = 0;
 let filmDragStartScroll = 0;
+let portfolioTrigger = null;
 
 const worldState = {
   bookTarget: 0,
@@ -241,6 +245,11 @@ function closeStory() {
 }
 
 function openPortfolio() {
+  closeStory();
+  portfolioTrigger = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+  if (!portfolioFrame.hasAttribute("src")) {
+    portfolioFrame.setAttribute("src", portfolioFrame.dataset.src);
+  }
   portfolioShell.classList.add("is-visible");
   portfolioShell.setAttribute("aria-hidden", "false");
   document.body.classList.add("is-portfolio");
@@ -249,11 +258,15 @@ function openPortfolio() {
 }
 
 function closePortfolio(options = {}) {
+  const wasVisible = portfolioShell.classList.contains("is-visible");
   portfolioShell.classList.remove("is-visible");
   portfolioShell.setAttribute("aria-hidden", "true");
   document.body.classList.remove("is-portfolio");
   controls.enabled = true;
   if (options.restoreView) resetView();
+  if (wasVisible && portfolioTrigger && document.contains(portfolioTrigger)) {
+    window.setTimeout(() => portfolioTrigger.focus({ preventScroll: true }), 0);
+  }
 }
 
 function setExperienceOpen(shell, open) {
@@ -488,6 +501,15 @@ document.querySelector(".story-close").addEventListener("click", closeStory);
 portfolioClose.addEventListener("click", () => closePortfolio({ restoreView: true }));
 portfolioShell.addEventListener("pointerdown", (event) => {
   if (event.target === portfolioShell) closePortfolio({ restoreView: true });
+});
+portfolioFrame.addEventListener("load", () => {
+  if (!portfolioFrame.hasAttribute("src")) return;
+  portfolioWindow.classList.add("is-ready");
+  portfolioLoading.setAttribute("aria-hidden", "true");
+});
+window.addEventListener("message", (event) => {
+  if (event.origin !== window.location.origin || event.source !== portfolioFrame.contentWindow) return;
+  if (event.data?.type === "portfolio:close") closePortfolio({ restoreView: true });
 });
 sketchbookClose.addEventListener("click", () => closeSketchbook({ restoreView: true }));
 sketchbookShell.addEventListener("pointerdown", (event) => {
