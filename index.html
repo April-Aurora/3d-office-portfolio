@@ -61,56 +61,16 @@
 
       <section class="portfolio-shell" role="dialog" aria-modal="true" aria-label="晓桐的作品集" aria-hidden="true">
         <div class="portfolio-window">
-          <header class="portfolio-header">
-            <a class="portfolio-name" href="#portfolio-top">WANG XIAOTONG</a>
-            <nav aria-label="作品集章节">
-              <a href="#selected-work">作品</a>
-              <a href="#about-me">关于</a>
-            </nav>
-            <button class="portfolio-close" type="button" aria-label="关闭作品集" title="关闭作品集">×</button>
-          </header>
-
-          <div class="portfolio-scroll" id="portfolio-top">
-            <section class="portfolio-intro">
-              <p class="portfolio-kicker">PORTFOLIO · 2026</p>
-              <h1>把观察变成<br />可以进入的作品。</h1>
-              <p class="portfolio-lead">关注叙事、视觉与数字体验。这里将收录我的代表项目、研究过程和持续发生的小实验。</p>
-              <span class="portfolio-index">01—04</span>
-            </section>
-
-            <section class="portfolio-projects" id="selected-work" aria-label="精选作品">
-              <article class="portfolio-project project-coral">
-                <div class="project-visual" aria-hidden="true"><span>01</span><i></i><b></b></div>
-                <div class="project-copy">
-                  <p>数字体验 · 项目信息待补充</p>
-                  <h2>作品名称待补充</h2>
-                  <span>交互 / 视觉 / 研究</span>
-                </div>
-              </article>
-              <article class="portfolio-project project-mint">
-                <div class="project-visual" aria-hidden="true"><span>02</span><i></i><b></b></div>
-                <div class="project-copy">
-                  <p>叙事研究 · 项目信息待补充</p>
-                  <h2>作品名称待补充</h2>
-                  <span>策划 / 写作 / 编辑</span>
-                </div>
-              </article>
-              <article class="portfolio-project project-yellow">
-                <div class="project-visual" aria-hidden="true"><span>03</span><i></i><b></b></div>
-                <div class="project-copy">
-                  <p>空间实验 · 项目信息待补充</p>
-                  <h2>作品名称待补充</h2>
-                  <span>概念 / 空间 / 制作</span>
-                </div>
-              </article>
-            </section>
-
-            <section class="portfolio-about" id="about-me">
-              <p>ABOUT</p>
-              <h2>我的具体介绍与联系方式待补充。</h2>
-              <span>xiaotong · portfolio</span>
-            </section>
+          <div class="portfolio-loading" role="status" aria-live="polite">
+            <span aria-hidden="true"></span>
+            <p>正在打开作品集</p>
           </div>
+          <iframe
+            class="portfolio-frame"
+            data-src="./portfolio/index.html"
+            title="王晓桐的产品交互设计作品集"
+          ></iframe>
+          <button class="portfolio-close" type="button" aria-label="关闭作品集" title="关闭作品集">×</button>
         </div>
       </section>
 
