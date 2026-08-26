@@ -399,7 +399,7 @@ button:focus-visible {
   width: 84px;
   height: 2px;
   overflow: hidden;
-  background: rgb(255 101 74 / 16%);
+  background: rgb(28 207 186 / 16%);
 }
 
 .portfolio-loading span::after {
@@ -407,7 +407,7 @@ button:focus-visible {
   display: block;
   width: 100%;
   height: 100%;
-  background: #ff654a;
+  background: #1ccfba;
   transform-origin: left;
   animation: portfolio-loading 1.1s cubic-bezier(.16, 1, .3, 1) infinite;
 }
@@ -435,9 +435,9 @@ button:focus-visible {
 }
 
 .portfolio-close:hover {
-  border-color: #ff654a;
-  background: #ff654a;
-  color: #18100d;
+  border-color: #1ccfba;
+  background: #1ccfba;
+  color: #071816;
   transform: rotate(5deg);
 }
 
