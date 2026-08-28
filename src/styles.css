@@ -1103,6 +1103,107 @@ body.scroll-is-project .scene-status { opacity: 0; }
   .scroll-project-cue i { height: 30px; }
 }
 
+/* Night mode keeps the same warm accent while shifting the interface to a
+   charcoal-green surface. These rules come after the scroll presentation
+   styles so fixed light-mode values cannot reduce contrast. */
+body.is-night,
+html:has(body.is-night) {
+  background: #2f3836;
+  color: #f3eee5;
+}
+
+body.is-night #scene { background: #2f3836; }
+body.is-night .scroll-shell { color: #f3eee5; }
+body.is-night .scroll-hero h1,
+body.is-night .scroll-about h2,
+body.is-night .scroll-projects h2,
+body.is-night .scroll-capabilities span { color: #f3eee5; }
+body.is-night .scroll-hero h1 span,
+body.is-night .scroll-projects h2 span,
+body.is-night .scroll-eyebrow,
+body.is-night .scroll-capabilities b { color: #e39a8f; }
+body.is-night .scroll-summary,
+body.is-night .scroll-about-body,
+body.is-night .scroll-projects > .scroll-project-copy > p:not(.scroll-eyebrow) { color: #c8c8bd; }
+body.is-night .scroll-about-lead { color: #eee8de; }
+body.is-night .scroll-capabilities,
+body.is-night .scroll-capabilities span { border-color: rgb(243 238 229 / 22%); }
+body.is-night .scroll-cue i,
+body.is-night .scroll-cue i::after { border-color: #e39a8f; background-color: #e39a8f; }
+body.is-night .scroll-shell ~ .site-header {
+  background: rgb(47 56 54 / 76%);
+  border-color: rgb(243 238 229 / 22%);
+}
+body.is-night .scroll-shell ~ .site-header .wordmark-title,
+body.is-night .scroll-shell ~ .site-header .time-toggle strong,
+body.is-night .scroll-shell ~ .site-header .reset-view { color: #f3eee5; }
+body.is-night .scroll-shell ~ .site-header .wordmark-subtitle,
+body.is-night .scroll-shell ~ .site-header .time-toggle { color: #c8c8bd; }
+body.is-night .scroll-enter-button { border-color: #e39a8f; background: #c77870; color: #231f1d; }
+body.is-night .scroll-enter-button:hover { border-color: #efa99f; background: #e39a8f; }
+body.is-night .story-panel {
+  background: rgb(47 56 54 / 91%);
+  border-color: rgb(243 238 229 / 24%);
+  box-shadow: 0 22px 70px rgb(12 19 18 / 42%);
+}
+body.is-night .story-panel h1,
+body.is-night .story-panel strong { color: #f3eee5; }
+body.is-night .story-panel > p:nth-of-type(2),
+body.is-night .story-panel small { color: #c8c8bd; }
+body.is-night .story-panel > p:first-of-type { color: #e39a8f; }
+body.is-night .story-close { color: #f3eee5; }
+body.is-night .portfolio-shell { background: rgb(11 18 17 / 46%); }
+body.is-night .experience-shell { background: rgb(10 16 15 / 58%); }
+body.is-night .sketchbook-window {
+  background: #293431;
+  color: #f3eee5;
+  border-color: #53605a;
+  box-shadow: 0 34px 90px rgb(7 13 12 / 48%);
+}
+body.is-night .sketchbook-header {
+  border-bottom-color: rgb(243 238 229 / 20%);
+  background: rgb(53 67 63 / 96%);
+}
+body.is-night .sketchbook-header > div:first-child span,
+body.is-night .sketch-size-label { color: #a8b2ab; }
+body.is-night .sketch-tools button {
+  border-color: rgb(243 238 229 / 26%);
+  color: #f3eee5;
+}
+body.is-night .sketch-tools button:hover,
+body.is-night .sketch-tools button.is-active { background: #e39a8f; color: #2a2320; }
+body.is-night .sketch-size { accent-color: #e39a8f; }
+body.is-night .sketchbook-paper {
+  background:
+    linear-gradient(90deg, #d8d4cc 0 49.8%, #aaa79f 50%, #d8d4cc 50.2% 100%),
+    #d8d4cc;
+  box-shadow: 0 16px 38px rgb(5 11 10 / 28%), inset 0 0 80px rgb(30 36 34 / 12%);
+}
+body.is-night .sketch-spine { background: linear-gradient(90deg, transparent, rgb(32 39 37 / 28%), transparent); }
+body.is-night .page-number { color: #6f7873; }
+body.is-night .sketch-hint { color: #a8b2ab; }
+body.is-night .film-window {
+  background: #111917;
+  color: #f3eee5;
+  border-color: #53605a;
+  box-shadow: 0 34px 90px rgb(5 11 10 / 48%);
+}
+body.is-night .film-header { border-bottom-color: rgb(243 238 229 / 20%); background: #1c2824; }
+body.is-night .film-header > div:first-child span { color: #a8b2ab; }
+body.is-night .film-controls button { border-color: rgb(243 238 229 / 30%); }
+body.is-night .film-controls button:hover { background: #e39a8f; color: #2a2320; }
+body.is-night .film-count,
+body.is-night .film-frame figcaption span,
+body.is-night .film-frame figcaption small,
+body.is-night .film-footer { color: #a8b2ab; }
+body.is-night .film-strip {
+  background:
+    repeating-linear-gradient(90deg, #111917 0 18px, #6d7973 18px 27px, #111917 27px 45px) top / auto 13px repeat-x,
+    repeating-linear-gradient(90deg, #111917 0 18px, #6d7973 18px 27px, #111917 27px 45px) bottom / auto 13px repeat-x;
+}
+body.is-night .film-frame img { filter: saturate(.62) brightness(.78) contrast(1.08); background: #27332f; }
+body.is-night .film-footer { border-top-color: rgb(243 238 229 / 20%); }
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

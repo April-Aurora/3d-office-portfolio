@@ -301,28 +301,13 @@ export function markInteractive(group, id, label, focusPosition, targetPosition)
   hitArea.position.copy(boundsCenter);
   hitArea.userData.interactiveRoot = group;
 
-  const shortLabel = label.split("：")[0].slice(0, 8);
-  const markerTexture = createLabelTexture(
-    [{ text: shortLabel, size: 30, x: 24, y: 46, color: "#e8ece8", weight: 700 }],
-    { width: 240, height: 78, background: "rgba(19, 26, 25, .9)", rule: "rgba(28, 207, 186, .72)" },
-  );
-  const marker = new THREE.Sprite(new THREE.SpriteMaterial({ map: markerTexture, transparent: true, opacity: 0, depthTest: false, depthWrite: false }));
-  marker.name = `${id}-hover-marker`;
-  marker.scale.set(1.35, 0.44, 1);
-  const markerPosition = new THREE.Vector3(
-    (bounds.min.x + bounds.max.x) / 2,
-    bounds.max.y + 0.34,
-    bounds.min.z,
-  );
-  marker.position.copy(group.worldToLocal(markerPosition));
-  marker.renderOrder = 20;
-  marker.userData.interactiveRoot = group;
-
   group.traverse((child) => {
     if (child.isMesh) child.userData.interactiveRoot = group;
   });
-  group.add(hitArea, marker);
-  group.userData.hoverMarker = marker;
+  // Keep the hit area invisible and let the object itself provide the hover feedback.
+  // Floating labels made the room feel like a debug view and competed with the portfolio copy.
+  group.add(hitArea);
+  group.userData.hoverMarker = null;
   return group;
 }
 

@@ -672,35 +672,3 @@ export function createDeskObjects(materials) {
   group.add(cup);
   return group;
 }
-
-export function createHiddenNotes(materials) {
-  const notes = new THREE.Group();
-  notes.name = "hidden-notes";
-  const noteSpecs = [
-    { text: "ENTER THE SCREEN", position: [-0.6, 5.0, -4.88], size: [2.2, 0.58], color: "#8f6762", rotation: -0.035 },
-    { text: "OPEN THE BOOK", position: [-3.9, 2.55, -4.88], size: [1.72, 0.5], color: "#c9c4bc", rotation: 0.045 },
-    { text: "PULL THE ARCHIVE", position: [-5.3, 3.4, -4.88], size: [2.25, 0.52], color: "#777b77", rotation: -0.025 },
-  ];
-  const noteMaterials = [];
-  noteSpecs.forEach((spec, index) => {
-    const texture = createLabelTexture([
-      { text: spec.text, size: 35, x: 28, y: 68, color: "#222524", weight: 700 },
-      { text: "NIGHT NOTE  /  0" + (index + 1), size: 17, x: 28, y: 118, color: "#535753", weight: 600 },
-    ], { width: 640, height: 160, background: spec.color, border: false });
-    const material = new THREE.MeshStandardMaterial({
-      color: 0xffffff,
-      map: texture,
-      emissiveMap: texture,
-      emissive: 0xffffff,
-      emissiveIntensity: 0.2,
-      transparent: true,
-      opacity: 0,
-      depthWrite: false,
-    });
-    const note = roundedBox(`hidden-note-${index}`, [spec.size[0], spec.size[1], 0.025], spec.position, material, 0.025, { castShadow: false, rotation: [0, 0, spec.rotation] });
-    notes.add(note);
-    noteMaterials.push(material);
-  });
-  notes.userData.materials = noteMaterials;
-  return notes;
-}

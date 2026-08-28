@@ -14,6 +14,20 @@
   color: var(--ink);
 }
 
+html.is-night {
+  --page: #212a28;
+  --surface: #2b3633;
+  --surface-high: #35433f;
+  --ink: #f3eee5;
+  --muted: #c8c8bd;
+  --quiet: #a8b2ab;
+  --line: #53605a;
+  --accent: #e39a8f;
+  --accent-hover: #f2b0a6;
+  --accent-ink: #2a2320;
+  --accent-line: #8c615d;
+}
+
 html,
 body,
 .portfolio-shell,
@@ -35,6 +49,10 @@ body,
 .project-image img { filter: saturate(.92) brightness(1.02); }
 .project-image-shade { background: linear-gradient(transparent 60%, rgb(62 47 41 / 10%)); }
 
+html.is-night .project-image { background: var(--surface-high); }
+html.is-night .project-image img { filter: saturate(.86) brightness(.86) contrast(1.03); }
+html.is-night .project-image-shade { background: linear-gradient(transparent 48%, rgb(9 15 14 / 42%)); }
+
 .project-card > button:hover .project-image img {
   filter: saturate(1) brightness(1.06);
 }
@@ -46,6 +64,15 @@ body,
 .case-screen-visual { box-shadow: 0 28px 74px rgb(94 71 59 / 14%); }
 .case-hero-visual img { filter: saturate(.94) brightness(1.02); }
 .case-study-scroll { scrollbar-color: var(--surface-high) var(--page); }
+
+html.is-night .case-back {
+  background: rgb(33 42 40 / 94%);
+  color: var(--ink);
+  border-color: var(--line);
+}
+html.is-night .case-hero-visual,
+html.is-night .case-screen-visual { box-shadow: 0 28px 74px rgb(5 11 10 / 34%); }
+html.is-night .case-hero-visual img { filter: saturate(.84) brightness(.84) contrast(1.04); }
 
 @media (max-width: 720px) {
   .projects-section { padding-top: 34px; }

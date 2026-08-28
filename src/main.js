@@ -7,7 +7,6 @@ import {
   createComputer,
   createDesk,
   createDeskObjects,
-  createHiddenNotes,
   createLamp,
   createPlant,
   createRoom,
@@ -129,8 +128,7 @@ const lamp = createLamp(materials);
 const chair = createChair(materials);
 const deskObjects = createDeskObjects(materials);
 const floorPlant = createPlant(materials, [4.62, 0, -2.42], 1.02);
-const hiddenNotes = createHiddenNotes(materials);
-scene.add(room, desk, computer, book, deskCamera, shelf, lamp, chair, deskObjects, floorPlant, hiddenNotes);
+scene.add(room, desk, computer, book, deskCamera, shelf, lamp, chair, deskObjects, floorPlant);
 
 const interactives = new Map([
   ["computer", computer],
@@ -166,6 +164,12 @@ const interactionCopy = {
     meta: "当前使用可替换的示例照片",
   },
 };
+
+function syncPortfolioTheme() {
+  const frameDocument = portfolioFrame.contentDocument;
+  if (!frameDocument) return;
+  frameDocument.documentElement.classList.toggle("is-night", document.body.classList.contains("is-night"));
+}
 
 const pointer = new THREE.Vector2(2, 2);
 const raycaster = new THREE.Raycaster();
@@ -303,6 +307,7 @@ function openPortfolio() {
   if (!portfolioFrame.hasAttribute("src")) {
     portfolioFrame.setAttribute("src", portfolioFrame.dataset.src);
   }
+  syncPortfolioTheme();
   portfolioShell.classList.add("is-visible");
   portfolioShell.setAttribute("aria-hidden", "false");
   document.body.classList.add("is-portfolio");
@@ -375,6 +380,7 @@ function toggleNight(forceValue) {
   worldState.nightTarget = shouldBeNight ? 1 : 0;
   lamp.userData.on = shouldBeNight;
   document.body.classList.toggle("is-night", shouldBeNight);
+  syncPortfolioTheme();
   timeToggle.setAttribute("aria-pressed", String(shouldBeNight));
   timeLabel.textContent = shouldBeNight ? "21:18" : "18:42";
   timeToggle.querySelector("span").textContent = shouldBeNight ? "关掉晚灯" : "打开晚灯";
@@ -431,7 +437,7 @@ function resetView() {
   worldState.screenTarget = 0;
   worldState.bookTarget = 0;
   worldState.shelfTarget = 0;
-  setStatus("作品集在屏幕里", "桌上的物件也各自藏着一段内容");
+  setStatus("设计实践", "从复杂业务出发，整理成可用的产品体验");
   window.scrollTo({ top: 0, behavior: reducedMotion.matches ? "auto" : "smooth" });
   updateScrollProgress();
   const destination = window.innerWidth < 720 ? mobileCamera : scrollCameraPosition;
@@ -488,11 +494,6 @@ function updateNight(delta) {
   lamp.userData.bulbMaterial.emissiveIntensity = THREE.MathUtils.lerp(0.18, 2.3, progress);
   lamp.userData.shadeMaterial.emissive.setHex(0x4e2105);
   lamp.userData.shadeMaterial.emissiveIntensity = progress * 0.4;
-  hiddenNotes.userData.materials.forEach((material, index) => {
-    const reveal = smoothstep(clamp01(progress * 1.5 - index * 0.12));
-    material.opacity = reveal * 0.98;
-    material.emissiveIntensity = 0.2 + reveal * 1.6;
-  });
   room.userData.lightFixtures.forEach((fixture, index) => {
     const reveal = smoothstep(clamp01(progress * 1.24 - index * 0.08));
     fixture.material.opacity = reveal * 0.96;
@@ -557,10 +558,11 @@ portfolioClose.addEventListener("click", () => closePortfolio({ restoreView: tru
 portfolioShell.addEventListener("pointerdown", (event) => {
   if (event.target === portfolioShell) closePortfolio({ restoreView: true });
 });
-portfolioFrame.addEventListener("load", () => {
+  portfolioFrame.addEventListener("load", () => {
   if (!portfolioFrame.hasAttribute("src")) return;
   portfolioWindow.classList.add("is-ready");
   portfolioLoading.setAttribute("aria-hidden", "true");
+  syncPortfolioTheme();
 });
 window.addEventListener("message", (event) => {
   if (event.origin !== window.location.origin || event.source !== portfolioFrame.contentWindow) return;
