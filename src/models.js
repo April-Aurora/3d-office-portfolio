@@ -12,8 +12,8 @@ import {
 } from "./scene-kit.js";
 
 function joint(name, position, materials, radius = 0.11) {
-  const mesh = cylinder(name, radius, radius, 0.14, position, materials.blackMetal, 24, { rotation: [Math.PI / 2, 0, 0] });
-  const screw = cylinder(`${name}-screw`, radius * 0.34, radius * 0.34, 0.154, position, materials.darkEdge, 18, { rotation: [Math.PI / 2, 0, 0] });
+  const mesh = cylinder(name, radius, radius, 0.14, position, materials.lampMetal ?? materials.blackMetal, 24, { rotation: [Math.PI / 2, 0, 0] });
+  const screw = cylinder(`${name}-screw`, radius * 0.34, radius * 0.34, 0.154, position, materials.lampChrome ?? materials.darkEdge, 18, { rotation: [Math.PI / 2, 0, 0] });
   const group = new THREE.Group();
   group.add(mesh, screw);
   return group;
@@ -68,35 +68,8 @@ export function createRoom(materials) {
   const room = new THREE.Group();
   room.name = "architecture";
 
-  // A shallow floor slab, back wall and side return make the scene read as a room
-  // rather than a collection of floating props. The thin trim and panel seams
-  // provide scale cues without competing with the desk as the focal point.
-  const floor = roundedBox("floor-slab", [20, 0.12, 18], [0, -0.11, 0], materials.floor, 0.045, { castShadow: false });
-  const backWall = box("back-wall", [20, 9.1, 0.16], [0, 4.48, -5.52], materials.wall, { castShadow: false });
-  const sideWall = box("left-wall", [0.16, 9.1, 13.2], [-8.15, 4.48, 0.35], materials.wallInset, { castShadow: false });
-  const ceilingTrim = roundedBox("ceiling-trim", [20, 0.16, 0.16], [0, 8.92, -5.36], materials.walnutDark, 0.035, { castShadow: false });
-  const backBaseboard = roundedBox("back-baseboard", [19.7, 0.24, 0.18], [0, 0.12, -5.35], materials.walnutDark, 0.035);
-  const sideBaseboard = roundedBox("side-baseboard", [0.18, 0.24, 13], [-8.02, 0.12, 0.35], materials.walnutDark, 0.035);
-  room.add(floor, backWall, sideWall, ceilingTrim, backBaseboard, sideBaseboard);
-
-  const wallPanels = new THREE.Group();
-  wallPanels.name = "wall-panel-seams";
-  [-7.2, -4.35, -1.5, 1.35, 4.2, 7.05].forEach((x, index) => {
-    wallPanels.add(box(`wall-panel-seam-${index}`, [0.035, 7.85, 0.035], [x, 4.46, -5.405], materials.walnutDark, { castShadow: false, receiveShadow: false }));
-  });
-  wallPanels.add(
-    box("wall-panel-rail-low", [19.4, 0.035, 0.035], [0, 2.05, -5.405], materials.walnutDark, { castShadow: false, receiveShadow: false }),
-    box("wall-panel-rail-high", [19.4, 0.035, 0.035], [0, 6.98, -5.405], materials.walnutDark, { castShadow: false, receiveShadow: false }),
-  );
-  room.add(wallPanels);
-
-  const floorSeams = new THREE.Group();
-  floorSeams.name = "floor-board-seams";
-  for (let index = -6; index <= 7; index += 1) {
-    floorSeams.add(box(`floor-board-seam-${index}`, [19, 0.006, 0.018], [0, -0.043, index * 0.72 - 0.15], materials.walnutDark, { castShadow: false, receiveShadow: false }));
-  }
-  room.add(floorSeams);
-
+  // Keep the room open and unframed. The shadow catcher preserves grounding
+  // while the rug and props establish the working area without solid walls.
   const shadowFloor = new THREE.Mesh(new THREE.PlaneGeometry(80, 80), materials.shadowFloor);
   shadowFloor.name = "shadow-catcher";
   shadowFloor.rotation.x = -Math.PI / 2;
@@ -322,30 +295,40 @@ export function createCamera(materials) {
   camera.position.set(2.18, 2.57, -0.34);
   camera.rotation.y = -0.12;
 
-  const cameraShell = new THREE.MeshPhysicalMaterial({ color: 0x34393a, roughness: 0.24, metalness: 0.7, clearcoat: 0.56, clearcoatRoughness: 0.22, emissive: 0x080b0c, emissiveIntensity: 0.18 });
-  const cameraEdge = new THREE.MeshStandardMaterial({ color: 0x626a69, roughness: 0.28, metalness: 0.66 });
+  const cameraShell = new THREE.MeshPhysicalMaterial({ color: 0x5c6461, roughness: 0.25, metalness: 0.62, clearcoat: 0.62, clearcoatRoughness: 0.18, emissive: 0x101615, emissiveIntensity: 0.12 });
+  const cameraPanel = new THREE.MeshStandardMaterial({ color: 0x3f4946, roughness: 0.42, metalness: 0.5 });
+  const cameraEdge = new THREE.MeshStandardMaterial({ color: 0x858d87, roughness: 0.26, metalness: 0.72 });
+  const cameraGrip = new THREE.MeshStandardMaterial({ color: 0x313a37, roughness: 0.62, metalness: 0.22 });
+  const cameraAccent = new THREE.MeshStandardMaterial({ color: 0xa68d71, roughness: 0.32, metalness: 0.62 });
   const body = roundedBox("camera-body", [1.0, 0.62, 0.42], [0, 0.3, 0], cameraShell, 0.055);
-  const bodyInset = box("camera-body-inset", [0.78, 0.4, 0.018], [0, 0.31, 0.215], materials.blackMatte, { castShadow: false });
+  const bodyInset = roundedBox("camera-body-inset", [0.8, 0.4, 0.024], [0, 0.31, 0.216], cameraPanel, 0.028, { castShadow: false });
+  const facePlate = roundedBox("camera-front-plate", [0.68, 0.27, 0.018], [0, 0.31, 0.235], materials.graphite, 0.02, { castShadow: false });
+  const faceLogo = roundedBox("camera-front-logo", [0.24, 0.045, 0.012], [0, 0.24, 0.248], cameraAccent, 0.012, { castShadow: false, receiveShadow: false });
   const topPlate = roundedBox("camera-top-plate", [0.94, 0.055, 0.36], [0, 0.64, -0.01], cameraEdge, 0.018);
-  const grip = box("camera-grip", [0.22, 0.49, 0.35], [0.39, 0.29, 0.02], materials.blackMatte);
-  const viewfinder = box("camera-viewfinder", [0.28, 0.16, 0.2], [-0.06, 0.72, -0.04], materials.graphite);
-  const hotShoe = box("camera-hot-shoe", [0.2, 0.018, 0.1], [-0.08, 0.82, -0.03], materials.chrome, { castShadow: false });
-  const shutter = cylinder("camera-shutter", 0.07, 0.07, 0.035, [0.29, 0.69, 0.06], materials.chrome, 22);
-  const modeDial = cylinder("camera-mode-dial", 0.1, 0.1, 0.065, [0.1, 0.71, -0.09], materials.darkEdge, 28);
-  const modeDialCap = cylinder("camera-mode-dial-cap", 0.057, 0.057, 0.071, [0.1, 0.75, -0.09], materials.chrome, 24);
+  const grip = roundedBox("camera-grip", [0.22, 0.49, 0.35], [0.39, 0.29, 0.02], cameraGrip, 0.035);
+  const gripTexture = roundedBox("camera-grip-inset", [0.14, 0.33, 0.018], [0.39, 0.29, 0.2], materials.blackMatte, 0.022, { castShadow: false });
+  const viewfinder = roundedBox("camera-viewfinder", [0.28, 0.16, 0.2], [-0.06, 0.72, -0.04], cameraPanel, 0.025);
+  const viewfinderGlass = roundedBox("camera-viewfinder-glass", [0.2, 0.09, 0.012], [-0.06, 0.72, 0.065], materials.softBlue, 0.014, { castShadow: false });
+  const hotShoe = roundedBox("camera-hot-shoe", [0.2, 0.018, 0.1], [-0.08, 0.82, -0.03], cameraAccent, 0.008, { castShadow: false });
+  const shutter = cylinder("camera-shutter", 0.07, 0.07, 0.035, [0.29, 0.69, 0.06], cameraAccent, 22);
+  const modeDial = cylinder("camera-mode-dial", 0.1, 0.1, 0.065, [0.1, 0.71, -0.09], cameraPanel, 28);
+  const modeDialCap = cylinder("camera-mode-dial-cap", 0.057, 0.057, 0.071, [0.1, 0.75, -0.09], cameraAccent, 24);
   const recordLight = new THREE.Mesh(new THREE.SphereGeometry(0.022, 14, 10), new THREE.MeshStandardMaterial({ color: 0xe67a68, emissive: 0x8f2e22, emissiveIntensity: 0.35 }));
   recordLight.position.set(-0.36, 0.58, 0.22);
-  camera.add(body, bodyInset, topPlate, grip, viewfinder, hotShoe, shutter, modeDial, modeDialCap, recordLight);
+  camera.add(body, bodyInset, facePlate, faceLogo, topPlate, grip, gripTexture, viewfinder, viewfinderGlass, hotShoe, shutter, modeDial, modeDialCap, recordLight);
 
   const lens = new THREE.Group();
   lens.position.set(-0.08, 0.31, 0.27);
   lens.rotation.x = Math.PI / 2;
-  lens.add(cylinder("camera-lens-barrel", 0.25, 0.29, 0.28, [0, 0, 0], cameraEdge, 36));
-  lens.add(cylinder("camera-focus-ring", 0.27, 0.27, 0.1, [0, -0.08, 0], materials.blackMatte, 40));
-  lens.add(cylinder("camera-lens-front-ring", 0.235, 0.235, 0.055, [0, -0.145, 0], materials.darkEdge, 40));
-  const lensGlass = new THREE.MeshPhysicalMaterial({ color: 0x3f5d63, roughness: 0.08, metalness: 0.34, clearcoat: 0.92, clearcoatRoughness: 0.12, emissive: 0x0c171a, emissiveIntensity: 0.2 });
+  lens.add(cylinder("camera-lens-barrel", 0.25, 0.29, 0.28, [0, 0, 0], cameraPanel, 36));
+  lens.add(cylinder("camera-focus-ring", 0.27, 0.27, 0.1, [0, -0.08, 0], cameraGrip, 40));
+  lens.add(torus("camera-focus-groove-one", 0.255, 0.014, [0, -0.035, 0], cameraAccent, { rotation: [Math.PI / 2, 0, 0] }));
+  lens.add(torus("camera-focus-groove-two", 0.255, 0.012, [0, -0.108, 0], cameraEdge, { rotation: [Math.PI / 2, 0, 0] }));
+  lens.add(cylinder("camera-lens-front-ring", 0.235, 0.235, 0.055, [0, -0.145, 0], cameraEdge, 40));
+  const lensGlass = new THREE.MeshPhysicalMaterial({ color: 0x5d8589, roughness: 0.07, metalness: 0.28, clearcoat: 0.96, clearcoatRoughness: 0.1, emissive: 0x193235, emissiveIntensity: 0.3 });
   lens.add(cylinder("camera-lens-glass", 0.19, 0.19, 0.02, [0, -0.19, 0], lensGlass, 40));
-  lens.add(torus("camera-lens-aperture", 0.105, 0.018, [0, -0.204, 0], materials.blackMatte, { rotation: [Math.PI / 2, 0, 0] }));
+  lens.add(torus("camera-lens-aperture", 0.105, 0.018, [0, -0.204, 0], cameraGrip, { rotation: [Math.PI / 2, 0, 0] }));
+  lens.add(cylinder("camera-lens-reflection", 0.07, 0.07, 0.006, [-0.045, -0.214, 0.035], new THREE.MeshBasicMaterial({ color: 0xbad7d5, transparent: true, opacity: 0.55 }), 28, { castShadow: false, receiveShadow: false }));
   camera.add(lens);
 
   const strapCurve = new THREE.CatmullRomCurve3([
@@ -458,17 +441,26 @@ export function createLamp(materials) {
   // Keep the lamp behind and left of the laptop so the silhouette reads clearly in the entry view.
   lamp.position.set(-1.8, 2.465, -0.12);
 
-  const base = cylinder("lamp-base", 0.34, 0.39, 0.11, [0, 0.055, 0], materials.blackMetal, 36);
-  const baseRing = torus("lamp-base-ring", 0.31, 0.025, [0, 0.115, 0], materials.darkEdge, { rotation: [Math.PI / 2, 0, 0] });
-  const switchButton = cylinder("lamp-switch", 0.04, 0.04, 0.032, [0.2, 0.132, 0.1], materials.mutedRed, 18);
-  lamp.add(base, baseRing, switchButton);
+  const lampMetal = new THREE.MeshPhysicalMaterial({ color: 0x4f5955, roughness: 0.26, metalness: 0.68, clearcoat: 0.46, clearcoatRoughness: 0.2 });
+  const lampChrome = new THREE.MeshStandardMaterial({ color: 0xa1a39a, roughness: 0.24, metalness: 0.76 });
+  const lampBaseTop = new THREE.MeshStandardMaterial({ color: 0x69736d, roughness: 0.34, metalness: 0.56 });
+  materials.lampMetal = lampMetal;
+  materials.lampChrome = lampChrome;
+
+  const base = cylinder("lamp-base", 0.34, 0.39, 0.11, [0, 0.055, 0], lampMetal, 40);
+  const baseFoot = cylinder("lamp-base-foot", 0.3, 0.33, 0.045, [0, 0.015, 0], materials.blackMatte, 40);
+  const baseTop = cylinder("lamp-base-top", 0.285, 0.285, 0.022, [0, 0.118, 0], lampBaseTop, 40);
+  const baseRing = torus("lamp-base-ring", 0.31, 0.025, [0, 0.13, 0], lampChrome, { rotation: [Math.PI / 2, 0, 0] });
+  const baseInnerRing = torus("lamp-base-inner-ring", 0.19, 0.012, [0, 0.143, 0], materials.mutedRed, { rotation: [Math.PI / 2, 0, 0] });
+  const switchButton = cylinder("lamp-switch", 0.04, 0.04, 0.032, [0.2, 0.152, 0.1], materials.mutedRed, 18);
+  lamp.add(base, baseFoot, baseTop, baseRing, baseInnerRing, switchButton);
 
   const basePoint = [-0.02, 0.18, 0];
   const elbowPoint = [-0.17, 0.84, 0];
   const headPoint = [-0.28, 1.22, 0];
   [-0.055, 0.055].forEach((z, index) => {
-    lamp.add(cylinderBetween(`lower-strut-${index}`, [basePoint[0], basePoint[1], z], [elbowPoint[0], elbowPoint[1], z], 0.031, materials.blackMetal, 16));
-    lamp.add(cylinderBetween(`upper-strut-${index}`, [elbowPoint[0], elbowPoint[1], z], [headPoint[0], headPoint[1], z], 0.031, materials.blackMetal, 16));
+    lamp.add(cylinderBetween(`lower-strut-${index}`, [basePoint[0], basePoint[1], z], [elbowPoint[0], elbowPoint[1], z], 0.033, lampMetal, 18));
+    lamp.add(cylinderBetween(`upper-strut-${index}`, [elbowPoint[0], elbowPoint[1], z], [headPoint[0], headPoint[1], z], 0.033, lampMetal, 18));
   });
   lamp.add(joint("base-joint", basePoint, materials, 0.12));
   lamp.add(joint("elbow-joint", elbowPoint, materials, 0.13));
@@ -479,21 +471,28 @@ export function createLamp(materials) {
   head.rotation.z = -0.18;
   lamp.add(head);
 
-  const socket = cylinder("lamp-socket", 0.1, 0.12, 0.2, [0, -0.12, 0], materials.graphite, 24);
-  const shadeMaterial = materials.amberMetal.clone();
-  const shade = new THREE.Mesh(new THREE.ConeGeometry(0.36, 0.52, 36, 1, true), shadeMaterial);
+  const socket = cylinder("lamp-socket", 0.1, 0.12, 0.2, [0, -0.12, 0], lampMetal, 28);
+  const socketCollar = torus("lamp-socket-collar", 0.105, 0.016, [0, -0.19, 0], lampChrome, { rotation: [Math.PI / 2, 0, 0] });
+  const shadeMaterial = new THREE.MeshPhysicalMaterial({ color: 0x76534a, roughness: 0.28, metalness: 0.42, clearcoat: 0.55, clearcoatRoughness: 0.18, emissive: 0x160b08, emissiveIntensity: 0.05, side: THREE.DoubleSide });
+  const shadeInnerMaterial = new THREE.MeshStandardMaterial({ color: 0xb47755, roughness: 0.42, metalness: 0.18, emissive: 0x2b140b, emissiveIntensity: 0.08, side: THREE.DoubleSide });
+  const shade = new THREE.Mesh(new THREE.ConeGeometry(0.36, 0.52, 40, 1, true), shadeMaterial);
   shade.name = "lamp-shade";
   shade.position.y = -0.38;
   shade.castShadow = true;
-  const rim = torus("lamp-shade-rim", 0.36, 0.024, [0, -0.64, 0], materials.darkEdge, { rotation: [Math.PI / 2, 0, 0] });
+  const shadeInner = new THREE.Mesh(new THREE.ConeGeometry(0.315, 0.46, 40, 1, true), shadeInnerMaterial);
+  shadeInner.name = "lamp-shade-inner";
+  shadeInner.position.y = -0.38;
+  shadeInner.castShadow = false;
+  const rim = torus("lamp-shade-rim", 0.36, 0.026, [0, -0.64, 0], lampChrome, { rotation: [Math.PI / 2, 0, 0] });
+  const shadeBand = torus("lamp-shade-band", 0.305, 0.016, [0, -0.51, 0], materials.mutedRed, { rotation: [Math.PI / 2, 0, 0] });
   const bulbMaterial = materials.bulb.clone();
-  const bulbMesh = new THREE.Mesh(new THREE.SphereGeometry(0.115, 24, 18), bulbMaterial);
+  const bulbMesh = new THREE.Mesh(new THREE.SphereGeometry(0.13, 28, 20), bulbMaterial);
   bulbMesh.position.set(0, -0.5, 0);
   bulbMesh.scale.y = 1.2;
   const light = new THREE.PointLight(palette.amber, 0, 7.5, 2);
   light.position.set(0, -0.68, 0.08);
   light.castShadow = false;
-  head.add(socket, shade, rim, bulbMesh, light);
+  head.add(socket, socketCollar, shade, shadeInner, rim, shadeBand, bulbMesh, light);
 
   const cableCurve = new THREE.CatmullRomCurve3([
     new THREE.Vector3(0, 0.06, 0.11),
