@@ -721,6 +721,388 @@ button:focus-visible {
   .film-footer span:last-child { display: none; }
 }
 
+/* Scroll-led room presentation: the scene stays fixed while the page moves
+   through three chapters, matching the reference portfolio's narrative rhythm. */
+html,
+body,
+#app {
+  height: auto;
+  min-height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+html { background: #f5efe5; scroll-behavior: smooth; }
+body {
+  background: #f5efe5;
+  color: #3c3732;
+  transition: background 700ms ease, color 700ms ease;
+}
+
+#scene {
+  position: fixed;
+  z-index: 0;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #f5efe5;
+}
+
+.scroll-shell {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  pointer-events: none;
+}
+
+.scroll-panel {
+  position: relative;
+  min-height: 100svh;
+  width: 100%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.scroll-hero {
+  display: flex;
+  align-items: flex-end;
+  padding: 0 8vw 10vh;
+}
+
+.scroll-hero-copy {
+  position: relative;
+  z-index: 2;
+  width: 600px;
+  max-width: 48%;
+  pointer-events: none;
+}
+
+.scroll-eyebrow {
+  margin: 0 0 20px;
+  color: #9b776d;
+  font-family: "SFMono-Regular", "Cascadia Code", Consolas, monospace;
+  font-size: 11px;
+  letter-spacing: 0;
+  line-height: 1.4;
+}
+
+.scroll-hero h1,
+.scroll-about h2,
+.scroll-projects h2 {
+  margin: 0;
+  color: #3a3530;
+  font-weight: 650;
+  letter-spacing: 0;
+  line-height: 1.04;
+  text-wrap: balance;
+}
+
+.scroll-hero h1 {
+  font-size: 72px;
+  text-wrap: initial;
+  white-space: nowrap;
+}
+.scroll-hero h1 span,
+.scroll-projects h2 span { color: #b76d67; }
+
+.scroll-summary {
+  max-width: 430px;
+  margin: 26px 0 0;
+  color: #746a62;
+  font-size: 17px;
+  line-height: 1.8;
+  text-wrap: pretty;
+}
+
+.scroll-cue,
+.scroll-project-cue {
+  position: absolute;
+  z-index: 2;
+  right: 8vw;
+  bottom: 8vh;
+  display: grid;
+  justify-items: end;
+  gap: 13px;
+  color: #8b7c70;
+  font-family: "SFMono-Regular", "Cascadia Code", Consolas, monospace;
+  font-size: 10px;
+  letter-spacing: 0;
+}
+
+.scroll-cue i,
+.scroll-project-cue i {
+  position: relative;
+  display: block;
+  width: 1px;
+  height: 54px;
+  background: #b78c7e;
+}
+
+.scroll-cue i::after,
+.scroll-project-cue i::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: -3px;
+  width: 7px;
+  height: 7px;
+  border-right: 1px solid #b78c7e;
+  border-bottom: 1px solid #b78c7e;
+  transform: rotate(45deg);
+}
+
+.scroll-about {
+  display: flex;
+  align-items: center;
+  padding: 12vh 8vw;
+}
+
+.scroll-about-copy {
+  position: relative;
+  z-index: 2;
+  width: 520px;
+  max-width: 44%;
+  margin-left: 2vw;
+  pointer-events: none;
+}
+
+.scroll-about h2 { font-size: 62px; }
+.scroll-about-lead {
+  max-width: 510px;
+  margin: 34px 0 0;
+  color: #4d443d;
+  font-size: 22px;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+.scroll-about-body {
+  max-width: 490px;
+  margin: 20px 0 0;
+  color: #796e65;
+  font-size: 15px;
+  line-height: 1.9;
+  text-wrap: pretty;
+}
+
+.scroll-capabilities {
+  display: grid;
+  gap: 0;
+  max-width: 500px;
+  margin-top: 40px;
+  border-top: 1px solid rgb(113 96 86 / 25%);
+}
+
+.scroll-capabilities span {
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  align-items: center;
+  min-height: 52px;
+  border-bottom: 1px solid rgb(113 96 86 / 25%);
+  color: #4d443d;
+  font-size: 13px;
+}
+
+.scroll-capabilities b {
+  color: #b76d67;
+  font-family: "SFMono-Regular", "Cascadia Code", Consolas, monospace;
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.scroll-projects {
+  display: flex;
+  align-items: center;
+  padding: 12vh 8vw;
+}
+
+.scroll-project-copy {
+  position: relative;
+  z-index: 2;
+  width: 430px;
+  max-width: 38%;
+  pointer-events: none;
+}
+
+.scroll-projects h2 { font-size: 78px; }
+.scroll-projects > .scroll-project-copy > p:not(.scroll-eyebrow) {
+  max-width: 390px;
+  margin: 30px 0 0;
+  color: #766b63;
+  font-size: 15px;
+  line-height: 1.85;
+  text-wrap: pretty;
+}
+
+.scroll-enter-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 168px;
+  min-height: 50px;
+  margin-top: 28px;
+  padding: 0 17px 0 18px;
+  border: 1px solid #b76d67;
+  border-radius: 3px;
+  background: #b76d67;
+  color: #fff8ef;
+  font-size: 13px;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: transform 220ms ease, background 220ms ease, border-color 220ms ease;
+}
+
+.scroll-enter-button:hover { background: #9f5e5b; border-color: #9f5e5b; transform: translateY(-3px); }
+.scroll-enter-button:active { transform: translateY(-1px) scale(0.985); }
+
+.scroll-shell ~ .site-header { background: rgb(245 239 229 / 62%); border-color: rgb(113 96 86 / 22%); }
+.scroll-shell ~ .site-header .wordmark-title,
+.scroll-shell ~ .site-header .time-toggle strong,
+.scroll-shell ~ .site-header .reset-view { color: #3a3530; }
+.scroll-shell ~ .site-header .wordmark-subtitle,
+.scroll-shell ~ .site-header .time-toggle { color: #8b7c70; }
+
+body.scroll-is-about .object-dock,
+body.scroll-is-project .object-dock { opacity: 0; pointer-events: none; transform: translateX(16px); }
+body.scroll-is-project .scene-status { opacity: 0; }
+.scroll-shell ~ .object-dock,
+.scroll-shell ~ .scene-status { opacity: 0; pointer-events: none; }
+
+.loading-screen {
+  align-content: center;
+  justify-items: center;
+  padding: 30px;
+  background: #f5efe5;
+  color: #3a3530;
+}
+
+.loading-room-mark {
+  position: relative;
+  width: 78px;
+  height: 62px;
+  margin-bottom: 32px;
+}
+
+.loading-room-mark i { position: absolute; display: block; background: #d9b2a7; }
+.loading-room-mark i:nth-child(1) { left: 0; bottom: 0; width: 78px; height: 2px; transform: skewX(-35deg); }
+.loading-room-mark i:nth-child(2) { left: 13px; bottom: 0; width: 2px; height: 54px; transform: skewY(35deg); transform-origin: bottom; }
+.loading-room-mark i:nth-child(3) { right: 13px; bottom: 0; width: 2px; height: 54px; transform: skewY(-35deg); transform-origin: bottom; }
+
+.loading-copy {
+  display: grid;
+  justify-items: center;
+  gap: 11px;
+  margin: 0;
+  text-align: center;
+}
+
+.loading-copy span,
+.loading-copy small {
+  color: #9b776d;
+  font-family: "SFMono-Regular", "Cascadia Code", Consolas, monospace;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+}
+
+.loading-copy h2 {
+  margin: 0;
+  font-size: 48px;
+  font-weight: 620;
+  letter-spacing: 0;
+  line-height: 1.12;
+}
+
+.loading-progress {
+  display: grid;
+  grid-template-columns: minmax(180px, 280px) 38px;
+  align-items: center;
+  gap: 14px;
+  width: min(332px, calc(100vw - 44px));
+  margin-top: 36px;
+}
+
+.loading-progress strong {
+  color: #8b7c70;
+  font-family: "SFMono-Regular", "Cascadia Code", Consolas, monospace;
+  font-size: 10px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.loading-track { background: rgb(113 96 86 / 18%); }
+.loading-track span { background: #b76d67; }
+
+.portfolio-shell {
+  background: rgb(95 78 67 / 18%);
+  backdrop-filter: blur(12px) saturate(92%);
+}
+
+.portfolio-window {
+  border-color: rgb(119 99 86 / 24%);
+  background: #f7f0e6;
+  color: #3b3530;
+  box-shadow: 0 42px 110px rgb(93 70 58 / 26%);
+}
+
+.portfolio-frame,
+.portfolio-loading { background: #f7f0e6; }
+.portfolio-loading { color: #8c7b70; }
+.portfolio-loading span { background: rgb(183 109 103 / 17%); }
+.portfolio-loading span::after { background: #b76d67; }
+
+.portfolio-close {
+  border-color: rgb(93 77 67 / 28%);
+  background: rgb(247 240 230 / 86%);
+  color: #3b3530;
+}
+
+.portfolio-close:hover {
+  border-color: #b76d67;
+  background: #b76d67;
+  color: #fff8ef;
+}
+
+@media (max-width: 900px) {
+  .scroll-hero,
+  .scroll-about,
+  .scroll-projects { padding-inline: 7vw; }
+  .scroll-hero-copy,
+  .scroll-about-copy,
+  .scroll-project-copy {
+    width: min(560px, 62vw);
+    max-width: none;
+    margin-left: 0;
+  }
+  .scroll-cue,
+  .scroll-project-cue { right: 7vw; }
+}
+
+@media (max-width: 720px) {
+  .scroll-hero,
+  .scroll-about,
+  .scroll-projects { min-height: 100svh; padding: 0 22px 86px; align-items: flex-end; }
+  .scroll-hero-copy,
+  .scroll-about-copy,
+  .scroll-project-copy {
+    width: min(100%, 440px);
+    max-width: none;
+  }
+  .scroll-hero h1 { font-size: 42px; }
+  .scroll-about { align-items: center; padding-bottom: 56px; }
+  .scroll-about h2 { font-size: 46px; }
+  .scroll-about-lead { margin-top: 24px; font-size: 20px; }
+  .scroll-about-body { font-size: 14px; }
+  .scroll-projects { align-items: flex-end; }
+  .scroll-projects h2 { font-size: 54px; }
+  .scroll-projects > .scroll-project-copy > p:not(.scroll-eyebrow) { font-size: 14px; }
+  .loading-copy h2 { font-size: 38px; }
+  .scroll-cue,
+  .scroll-project-cue { right: 22px; bottom: 30px; font-size: 9px; }
+  .scroll-cue i,
+  .scroll-project-cue i { height: 30px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

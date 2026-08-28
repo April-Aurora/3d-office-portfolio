@@ -46,18 +46,36 @@ const filmCount = document.querySelector(".film-count");
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
 const scene = new THREE.Scene();
-const dayColor = new THREE.Color(0xbab7b3);
-const nightColor = new THREE.Color(0x3a403f);
+const dayColor = new THREE.Color(0xf5efe5);
+const nightColor = new THREE.Color(0x4d5350);
 scene.background = dayColor.clone();
 scene.fog = new THREE.Fog(dayColor.clone(), 24, 42);
 
 const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
 // Entry framing follows the reference's high left-front three-quarter view:
 // the near left desk leg anchors the perspective while the chair recedes right.
-const desktopCamera = new THREE.Vector3(-6.15, 9.55, 16.75);
-const mobileCamera = new THREE.Vector3(-4.5, 9.15, 20.8);
-const initialTarget = new THREE.Vector3(-0.2, 3.15, -0.72);
+const desktopCamera = new THREE.Vector3(-11.1, 11.8, 25.0);
+const mobileCamera = new THREE.Vector3(-5.4, 10.1, 24.8);
+const initialTarget = new THREE.Vector3(-2.1, 2.9, -0.72);
 camera.position.copy(desktopCamera);
+
+const scrollCameraFrames = {
+  hero: {
+    position: desktopCamera.clone(),
+    target: initialTarget.clone(),
+  },
+  about: {
+    position: new THREE.Vector3(-20.5, 10.6, 25.0),
+    target: new THREE.Vector3(-13.2, 2.85, -0.65),
+  },
+  projects: {
+    position: new THREE.Vector3(-2.2, 4.2, 6.5),
+    target: new THREE.Vector3(-2.2, 3.12, -0.58),
+  },
+};
+const scrollCameraPosition = desktopCamera.clone();
+const scrollCameraTarget = initialTarget.clone();
+let scrollProgress = 0;
 
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance" });
 renderer.setSize(window.innerWidth, window.innerHeight, false);
@@ -72,6 +90,7 @@ const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.065;
 controls.enablePan = false;
+controls.enableZoom = false;
 controls.minDistance = 3.1;
 controls.maxDistance = 25;
 controls.minPolarAngle = Math.PI * 0.2;
@@ -176,6 +195,40 @@ const worldState = {
   nightProgress: 0,
   screenProgress: 0,
 };
+
+function mixVectorFrames(from, to, progress, target) {
+  return target.lerpVectors(from, to, smoothstep(progress));
+}
+
+function updateScrollProgress() {
+  const scrollRange = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
+  scrollProgress = clamp01(window.scrollY / scrollRange);
+  document.body.classList.toggle("scroll-is-about", scrollProgress >= 0.25 && scrollProgress < 0.75);
+  document.body.classList.toggle("scroll-is-project", scrollProgress >= 0.75);
+
+  const mobile = window.innerWidth < 720;
+  const heroPosition = mobile ? mobileCamera : scrollCameraFrames.hero.position;
+  const aboutPosition = mobile ? new THREE.Vector3(-18.8, 10.5, 29.0) : scrollCameraFrames.about.position;
+  const aboutTarget = mobile ? new THREE.Vector3(-13.6, 2.9, -0.65) : scrollCameraFrames.about.target;
+  const projectPosition = mobile ? new THREE.Vector3(-1.3, 4.6, 9.6) : scrollCameraFrames.projects.position;
+  const projectTarget = mobile ? new THREE.Vector3(-1.3, 3.08, -0.55) : scrollCameraFrames.projects.target;
+
+  if (scrollProgress < 0.5) {
+    const localProgress = scrollProgress / 0.5;
+    mixVectorFrames(heroPosition, aboutPosition, localProgress, scrollCameraPosition);
+    mixVectorFrames(scrollCameraFrames.hero.target, aboutTarget, localProgress, scrollCameraTarget);
+  } else {
+    const localProgress = (scrollProgress - 0.5) / 0.5;
+    mixVectorFrames(aboutPosition, projectPosition, localProgress, scrollCameraPosition);
+    mixVectorFrames(aboutTarget, projectTarget, localProgress, scrollCameraTarget);
+  }
+}
+
+function updateScrollCamera(delta) {
+  if (activeGroup || cameraTransition || document.body.classList.contains("is-portfolio") || document.body.classList.contains("has-experience-open")) return;
+  camera.position.lerp(scrollCameraPosition, 1 - Math.exp(-5.2 * delta));
+  controls.target.lerp(scrollCameraTarget, 1 - Math.exp(-5.2 * delta));
+}
 
 function clamp01(value) {
   return Math.min(Math.max(value, 0), 1);
@@ -379,14 +432,16 @@ function resetView() {
   worldState.bookTarget = 0;
   worldState.shelfTarget = 0;
   setStatus("作品集在屏幕里", "桌上的物件也各自藏着一段内容");
-  const destination = window.innerWidth < 720 ? mobileCamera : desktopCamera;
+  window.scrollTo({ top: 0, behavior: reducedMotion.matches ? "auto" : "smooth" });
+  updateScrollProgress();
+  const destination = window.innerWidth < 720 ? mobileCamera : scrollCameraPosition;
   cameraTransition = {
     startedAt: performance.now(),
     duration: reducedMotion.matches ? 1 : 1200,
     fromPosition: camera.position.clone(),
     toPosition: destination.clone(),
     fromTarget: controls.target.clone(),
-    toTarget: initialTarget.clone(),
+    toTarget: scrollCameraTarget.clone(),
   };
 }
 
@@ -708,17 +763,15 @@ function resize() {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, width < 720 ? 1.2 : 1.5));
   renderer.setSize(width, height, false);
   if (sketchbookShell.classList.contains("is-visible")) resizeSketchCanvas();
-  if (!activeGroup && !cameraTransition) {
-    camera.position.copy(width < 720 ? mobileCamera : desktopCamera);
-    controls.target.copy(initialTarget);
-  }
+  updateScrollProgress();
+  if (!activeGroup && !cameraTransition && width < 720) camera.position.copy(mobileCamera);
 }
 window.addEventListener("resize", resize);
 resize();
 
 let loadingProgress = 0;
 const loadingTimer = window.setInterval(() => {
-  loadingProgress = Math.min(loadingProgress + 9 + Math.random() * 13, 100);
+  loadingProgress = Math.min(loadingProgress + 3 + Math.random() * 6, 100);
   loadingTrack.style.width = `${loadingProgress}%`;
   loadingValue.textContent = `${Math.round(loadingProgress)}%`;
   if (loadingProgress >= 100) {
@@ -731,7 +784,9 @@ function animate(now) {
   timer.update(now);
   const delta = Math.min(timer.getDelta(), 0.05);
   const elapsed = timer.getElapsed();
+  updateScrollProgress();
   updateCamera(now);
+  updateScrollCamera(delta);
   updateBook(delta);
   updateShelf(delta);
   updateNight(delta);
