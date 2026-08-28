@@ -743,6 +743,12 @@ function animate(now) {
     const baseScale = group.userData.baseScale ?? 1;
     const targetScale = baseScale * (highlighted ? 1.012 : 1);
     group.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), 1 - Math.exp(-9 * delta));
+    const marker = group.userData.hoverMarker;
+    if (marker) {
+      marker.material.opacity = damp(marker.material.opacity, highlighted ? 0.96 : 0, 14, delta);
+      const markerScale = highlighted ? 1.04 : 1;
+      marker.scale.lerp(new THREE.Vector3(1.35 * markerScale, 0.44 * markerScale, 1), 1 - Math.exp(-12 * delta));
+    }
   });
 
   controls.update();

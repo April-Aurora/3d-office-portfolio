@@ -68,6 +68,35 @@ export function createRoom(materials) {
   const room = new THREE.Group();
   room.name = "architecture";
 
+  // A shallow floor slab, back wall and side return make the scene read as a room
+  // rather than a collection of floating props. The thin trim and panel seams
+  // provide scale cues without competing with the desk as the focal point.
+  const floor = roundedBox("floor-slab", [20, 0.12, 18], [0, -0.11, 0], materials.floor, 0.045, { castShadow: false });
+  const backWall = box("back-wall", [20, 9.1, 0.16], [0, 4.48, -5.52], materials.wall, { castShadow: false });
+  const sideWall = box("left-wall", [0.16, 9.1, 13.2], [-8.15, 4.48, 0.35], materials.wallInset, { castShadow: false });
+  const ceilingTrim = roundedBox("ceiling-trim", [20, 0.16, 0.16], [0, 8.92, -5.36], materials.walnutDark, 0.035, { castShadow: false });
+  const backBaseboard = roundedBox("back-baseboard", [19.7, 0.24, 0.18], [0, 0.12, -5.35], materials.walnutDark, 0.035);
+  const sideBaseboard = roundedBox("side-baseboard", [0.18, 0.24, 13], [-8.02, 0.12, 0.35], materials.walnutDark, 0.035);
+  room.add(floor, backWall, sideWall, ceilingTrim, backBaseboard, sideBaseboard);
+
+  const wallPanels = new THREE.Group();
+  wallPanels.name = "wall-panel-seams";
+  [-7.2, -4.35, -1.5, 1.35, 4.2, 7.05].forEach((x, index) => {
+    wallPanels.add(box(`wall-panel-seam-${index}`, [0.035, 7.85, 0.035], [x, 4.46, -5.405], materials.walnutDark, { castShadow: false, receiveShadow: false }));
+  });
+  wallPanels.add(
+    box("wall-panel-rail-low", [19.4, 0.035, 0.035], [0, 2.05, -5.405], materials.walnutDark, { castShadow: false, receiveShadow: false }),
+    box("wall-panel-rail-high", [19.4, 0.035, 0.035], [0, 6.98, -5.405], materials.walnutDark, { castShadow: false, receiveShadow: false }),
+  );
+  room.add(wallPanels);
+
+  const floorSeams = new THREE.Group();
+  floorSeams.name = "floor-board-seams";
+  for (let index = -6; index <= 7; index += 1) {
+    floorSeams.add(box(`floor-board-seam-${index}`, [19, 0.006, 0.018], [0, -0.043, index * 0.72 - 0.15], materials.walnutDark, { castShadow: false, receiveShadow: false }));
+  }
+  room.add(floorSeams);
+
   const shadowFloor = new THREE.Mesh(new THREE.PlaneGeometry(80, 80), materials.shadowFloor);
   shadowFloor.name = "shadow-catcher";
   shadowFloor.rotation.x = -Math.PI / 2;
@@ -140,8 +169,8 @@ export function createDesk(materials) {
   desk.name = "desk-system";
   desk.position.set(0.25, 0, -0.18);
 
-  const top = box("desk-top", [6.35, 0.18, 2.62], [0, 2.38, 0], materials.smoke);
-  const edge = box("desk-edge", [6.35, 0.035, 2.62], [0, 2.275, 0], materials.paperShadow);
+  const top = roundedBox("desk-top", [6.35, 0.18, 2.62], [0, 2.38, 0], materials.smoke, 0.08);
+  const edge = roundedBox("desk-edge", [6.34, 0.035, 2.61], [0, 2.275, 0], materials.paperShadow, 0.04);
   desk.add(top, edge);
 
   const legXs = [-2.58, 2.58];
@@ -163,7 +192,11 @@ export function createDesk(materials) {
   desk.add(drawerSlide);
 
   const tray = box("cable-tray", [2.7, 0.09, 0.42], [-0.2, 2.01, -0.94], materials.graphite);
-  desk.add(tray);
+  const cableGrommet = torus("desk-cable-grommet", 0.16, 0.035, [-1.98, 2.485, -0.72], materials.darkEdge, { rotation: [Math.PI / 2, 0, 0] });
+  const cableGrommetInner = cylinder("desk-cable-grommet-inner", 0.125, 0.125, 0.012, [-1.98, 2.487, -0.72], materials.blackMatte, 28, { rotation: [Math.PI / 2, 0, 0], castShadow: false, receiveShadow: false });
+  const powerBrick = roundedBox("desk-power-brick", [0.78, 0.16, 0.36], [-0.55, 1.82, -0.84], materials.blackMatte, 0.035);
+  const powerCable = cylinderBetween("desk-power-cable", [-0.2, 1.89, -0.84], [0.2, 2.18, -0.86], 0.018, materials.blackMatte, 10);
+  desk.add(tray, cableGrommet, cableGrommetInner, powerBrick, powerCable);
   desk.userData.drawerSlide = drawerSlide;
   return desk;
 }
@@ -173,7 +206,7 @@ export function createComputer(materials) {
   computer.name = "computer";
   computer.position.set(0.15, 2.5, -0.1);
 
-  const base = roundedBox("laptop-base", [2.25, 0.085, 1.42], [0, 0.035, 0], materials.blackMetal, 0.045);
+  const base = roundedBox("laptop-base", [2.25, 0.085, 1.42], [0, 0.035, 0], materials.blackMetal, 0.065);
   const keyWell = box("laptop-keywell", [2.05, 0.015, 1.17], [0, 0.085, -0.05], materials.graphite, { castShadow: false });
   computer.add(base, keyWell);
 
@@ -190,6 +223,13 @@ export function createComputer(materials) {
   computer.add(keyboard);
   computer.add(box("laptop-trackpad", [0.78, 0.01, 0.39], [0, 0.108, 0.43], materials.darkEdge, { castShadow: false }));
   computer.add(box("laptop-front-edge", [2.0, 0.012, 0.025], [0, 0.025, 0.71], materials.darkEdge, { castShadow: false }));
+  const speakerMaterial = materials.darkEdge;
+  [-0.76, -0.58, 0.58, 0.76].forEach((x, index) => {
+    computer.add(roundedBox(`laptop-speaker-${index}`, [0.11, 0.012, 0.025], [x, 0.11, 0.23], speakerMaterial, 0.008, { castShadow: false, receiveShadow: false }));
+  });
+  computer.add(
+    cylinder("laptop-logo", 0.08, 0.08, 0.012, [0, 0.098, -0.59], materials.chrome, 24, { rotation: [Math.PI / 2, 0, 0], castShadow: false, receiveShadow: false }),
+  );
 
   const screenPivot = new THREE.Group();
   screenPivot.position.set(0, 0.07, -0.7);
@@ -210,7 +250,8 @@ export function createComputer(materials) {
   const cameraDot = cylinder("laptop-camera", 0.014, 0.014, 0.008, [0, 1.27, 0.047], materials.blackMatte, 14, { rotation: [Math.PI / 2, 0, 0] });
   const hingeLeft = cylinder("laptop-hinge-left", 0.035, 0.035, 0.46, [-0.72, 0.02, 0], materials.graphite, 20, { rotation: [0, 0, Math.PI / 2] });
   const hingeRight = cylinder("laptop-hinge-right", 0.035, 0.035, 0.46, [0.72, 0.02, 0], materials.graphite, 20, { rotation: [0, 0, Math.PI / 2] });
-  screenPivot.add(lid, screen, cameraDot, hingeLeft, hingeRight);
+  const screenInset = roundedBox("laptop-screen-inset", [2.0, 1.13, 0.009], [0, 0.67, 0.034], materials.blackMatte, 0.018, { castShadow: false, receiveShadow: false });
+  screenPivot.add(lid, screenInset, screen, cameraDot, hingeLeft, hingeRight);
   computer.add(screenPivot);
 
   const glow = new THREE.RectAreaLight(0xe8e4de, 1.6, 1.9, 1.05);
@@ -353,12 +394,19 @@ export function createShelf(materials) {
     box("cabinet-divider", [0.08, 1.15, 1.38], [0, 0.76, 0], materials.graphite),
   );
   shelf.add(frame);
+  [-1.22, 1.22].forEach((x, index) => {
+    shelf.add(
+      roundedBox(`cabinet-foot-${index}`, [0.34, 0.18, 0.5], [x, 0.03, 0], materials.walnutDark, 0.035),
+      box(`cabinet-foot-pad-${index}`, [0.42, 0.035, 0.58], [x, -0.07, 0], materials.blackMatte, { castShadow: false }),
+    );
+  });
 
   [-0.76, 0.76].forEach((x, column) => {
     [0.46, 1.02].forEach((y, row) => {
       if (column === 1 && row === 1) return;
       shelf.add(box(`cabinet-door-${column}-${row}`, [1.34, 0.46, 0.06], [x, y, 0.755], materials.blackMatte));
       shelf.add(box(`cabinet-door-line-${column}-${row}`, [0.3, 0.015, 0.012], [x, y + 0.08, 0.792], materials.darkEdge, { castShadow: false }));
+      shelf.add(cylinder(`cabinet-knob-${column}-${row}`, 0.035, 0.035, 0.026, [x + (column ? -0.36 : 0.36), y - 0.08, 0.82], materials.chrome, 20, { rotation: [Math.PI / 2, 0, 0] }));
     });
   });
 
@@ -499,7 +547,24 @@ export function createChair(materials) {
   const support = box("chair-support", [0.16, 0.82, 0.12], [0, 1.96, 0.48], materials.steel, { rotation: [-0.12, 0, 0] });
   const stem = cylinder("chair-stem", 0.08, 0.1, 1.22, [0, 0.96, 0], materials.chrome, 22);
   const gas = cylinder("chair-gas", 0.13, 0.13, 0.32, [0, 1.42, 0], materials.steel, 24);
-  chair.add(seat, back, support, stem, gas);
+  const armrests = new THREE.Group();
+  [-0.68, 0.68].forEach((x, index) => {
+    armrests.add(
+      cylinder(`chair-arm-post-${index}`, 0.035, 0.035, 0.48, [x, 2.02, 0.33], materials.chrome, 16, { rotation: [0.08, 0, 0] }),
+      roundedBox(`chair-arm-pad-${index}`, [0.32, 0.08, 0.62], [x, 2.27, 0.24], materials.blackMatte, 0.035),
+    );
+  });
+  const backSeam = new THREE.LineLoop(
+    new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(-0.42, 2.54, 0.565),
+      new THREE.Vector3(0.42, 2.54, 0.565),
+      new THREE.Vector3(0.42, 2.98, 0.565),
+      new THREE.Vector3(-0.42, 2.98, 0.565),
+    ]),
+    new THREE.LineBasicMaterial({ color: 0x41423f, transparent: true, opacity: 0.8 }),
+  );
+  backSeam.name = "chair-back-seam";
+  chair.add(seat, back, support, stem, gas, armrests, backSeam);
   for (let index = 0; index < 5; index += 1) {
     const angle = (index / 5) * Math.PI * 2;
     const end = [Math.sin(angle) * 0.72, 0.31, Math.cos(angle) * 0.72];
