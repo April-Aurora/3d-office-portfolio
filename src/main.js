@@ -64,8 +64,10 @@ const scrollCameraFrames = {
     target: initialTarget.clone(),
   },
   about: {
-    position: new THREE.Vector3(-20.5, 10.6, 25.0),
-    target: new THREE.Vector3(-13.2, 2.85, -0.65),
+    // The About section moves in close to the desk camera while the profile copy
+    // and contact-sheet preview take over the left and right sides of the page.
+    position: new THREE.Vector3(6.2, 4.35, 5.1),
+    target: new THREE.Vector3(2.18, 2.95, -0.34),
   },
   projects: {
     position: new THREE.Vector3(-2.2, 4.2, 6.5),
@@ -159,9 +161,9 @@ const interactionCopy = {
   },
   camera: {
     kicker: "桌上的相机",
-    title: "照片留在一条可以推动的胶卷里",
-    body: "点击相机后，横向胶片会铺满画面。滚轮、拖动或方向键都可以继续翻阅。",
-    meta: "当前使用可替换的示例照片",
+    title: "把个人影像留在一条可以推动的胶卷里",
+    body: "相机打开后，照片会沿胶片铺开。滚轮、拖动或方向键都可以继续翻阅，也可以替换成你的工作、生活和旅途记录。",
+    meta: "胶片内容可替换为个人照片",
   },
 };
 
@@ -212,8 +214,8 @@ function updateScrollProgress() {
 
   const mobile = window.innerWidth < 720;
   const heroPosition = mobile ? mobileCamera : scrollCameraFrames.hero.position;
-  const aboutPosition = mobile ? new THREE.Vector3(-18.8, 10.5, 29.0) : scrollCameraFrames.about.position;
-  const aboutTarget = mobile ? new THREE.Vector3(-13.6, 2.9, -0.65) : scrollCameraFrames.about.target;
+  const aboutPosition = mobile ? new THREE.Vector3(4.9, 5.25, 8.6) : scrollCameraFrames.about.position;
+  const aboutTarget = mobile ? new THREE.Vector3(2.18, 2.95, -0.34) : scrollCameraFrames.about.target;
   const projectPosition = mobile ? new THREE.Vector3(-1.3, 4.6, 9.6) : scrollCameraFrames.projects.position;
   const projectTarget = mobile ? new THREE.Vector3(-1.3, 3.08, -0.55) : scrollCameraFrames.projects.target;
 

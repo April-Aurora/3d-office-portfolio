@@ -852,45 +852,168 @@ body {
 }
 
 .scroll-about {
+  isolation: isolate;
   display: flex;
   align-items: center;
   padding: 12vh 8vw;
 }
 
+.scroll-about::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  inset: 0 auto 0 0;
+  width: min(58vw, 820px);
+  pointer-events: none;
+  background: linear-gradient(90deg, rgb(245 239 229 / 94%) 0%, rgb(245 239 229 / 86%) 58%, rgb(245 239 229 / 18%) 100%);
+}
+
 .scroll-about-copy {
   position: relative;
   z-index: 2;
-  width: 520px;
-  max-width: 44%;
+  width: 560px;
+  max-width: 46%;
   margin-left: 2vw;
   pointer-events: none;
 }
 
-.scroll-about h2 { font-size: 62px; }
+.scroll-about h2 { font-size: 68px; }
+.scroll-about h2 span { color: #b76d67; }
 .scroll-about-lead {
-  max-width: 510px;
-  margin: 34px 0 0;
+  max-width: 500px;
+  margin: 25px 0 0;
   color: #4d443d;
-  font-size: 22px;
+  font-size: 21px;
   line-height: 1.55;
   text-wrap: pretty;
 }
 
 .scroll-about-body {
   max-width: 490px;
-  margin: 20px 0 0;
+  margin: 18px 0 0;
   color: #796e65;
   font-size: 15px;
   line-height: 1.9;
   text-wrap: pretty;
 }
 
+.scroll-profile-facts {
+  display: grid;
+  max-width: 510px;
+  margin-top: 28px;
+  border-top: 1px solid rgb(113 96 86 / 25%);
+}
+
+.scroll-profile-facts div {
+  display: grid;
+  grid-template-columns: 92px 1fr;
+  align-items: center;
+  min-height: 42px;
+  border-bottom: 1px solid rgb(113 96 86 / 25%);
+}
+
+.scroll-profile-facts span {
+  color: #9b776d;
+  font-family: "SFMono-Regular", "Cascadia Code", Consolas, monospace;
+  font-size: 10px;
+}
+
+.scroll-profile-facts strong {
+  color: #4d443d;
+  font-size: 12px;
+  font-weight: 500;
+}
+
 .scroll-capabilities {
   display: grid;
   gap: 0;
   max-width: 500px;
-  margin-top: 40px;
+  margin-top: 28px;
   border-top: 1px solid rgb(113 96 86 / 25%);
+}
+
+.scroll-about-reel {
+  position: absolute;
+  z-index: 2;
+  top: 16%;
+  right: 7vw;
+  width: min(600px, 42vw);
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 500ms ease, transform 700ms cubic-bezier(.16, 1, .3, 1);
+}
+
+body.scroll-is-about .scroll-about-reel {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.scroll-reel-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-bottom: 11px;
+  border-bottom: 1px solid rgb(113 96 86 / 30%);
+  color: #9b776d;
+  font-family: "SFMono-Regular", "Cascadia Code", Consolas, monospace;
+  font-size: 10px;
+}
+
+.scroll-reel-heading small {
+  color: #8b7c70;
+  font-family: inherit;
+  font-size: 9px;
+}
+
+.scroll-reel-feature {
+  position: relative;
+  margin-top: 18px;
+  padding: 10px 10px 28px;
+  border: 1px solid rgb(113 96 86 / 30%);
+  background: rgb(245 239 229 / 35%);
+  box-shadow: 0 18px 40px rgb(73 58 50 / 10%);
+}
+
+.scroll-reel-feature img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1.55;
+  object-fit: cover;
+  filter: saturate(.78) contrast(1.02);
+}
+
+.scroll-reel-feature span {
+  position: absolute;
+  right: 15px;
+  bottom: 9px;
+  color: #8b7c70;
+  font-family: "SFMono-Regular", "Cascadia Code", Consolas, monospace;
+  font-size: 9px;
+}
+
+.scroll-reel-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.scroll-reel-strip img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1.28;
+  object-fit: cover;
+  filter: saturate(.7) contrast(1.02);
+  border: 1px solid rgb(113 96 86 / 24%);
+}
+
+.scroll-about-reel > p {
+  max-width: 500px;
+  margin: 14px 0 0;
+  color: #8b7c70;
+  font-size: 10px;
+  line-height: 1.7;
 }
 
 .scroll-capabilities span {
@@ -1091,8 +1214,16 @@ body.scroll-is-project .scene-status { opacity: 0; }
   .scroll-hero h1 { font-size: 42px; }
   .scroll-about { align-items: center; padding-bottom: 56px; }
   .scroll-about h2 { font-size: 46px; }
-  .scroll-about-lead { margin-top: 24px; font-size: 20px; }
+  .scroll-about-lead { margin-top: 20px; font-size: 19px; }
   .scroll-about-body { font-size: 14px; }
+  .scroll-profile-facts { margin-top: 24px; }
+  .scroll-profile-facts div { grid-template-columns: 78px 1fr; min-height: 40px; }
+  .scroll-profile-facts strong { font-size: 11px; }
+  .scroll-about::before { width: 100%; height: 58%; bottom: auto; background: linear-gradient(180deg, rgb(245 239 229 / 96%) 0%, rgb(245 239 229 / 88%) 72%, rgb(245 239 229 / 12%) 100%); }
+  .scroll-about-reel { top: auto; right: 22px; bottom: 124px; width: min(360px, calc(100vw - 44px)); }
+  .scroll-about-reel .scroll-reel-feature { margin-top: 11px; padding: 7px 7px 23px; }
+  .scroll-reel-strip { gap: 6px; margin-top: 7px; }
+  .scroll-about-reel > p { margin-top: 8px; font-size: 9px; }
   .scroll-projects { align-items: flex-end; }
   .scroll-projects h2 { font-size: 54px; }
   .scroll-projects > .scroll-project-copy > p:not(.scroll-eyebrow) { font-size: 14px; }
@@ -1128,6 +1259,28 @@ body.is-night .scroll-projects > .scroll-project-copy > p:not(.scroll-eyebrow) {
 body.is-night .scroll-about-lead { color: #eee8de; }
 body.is-night .scroll-capabilities,
 body.is-night .scroll-capabilities span { border-color: rgb(243 238 229 / 22%); }
+body.is-night .scroll-about::before {
+  background: linear-gradient(90deg, rgb(47 56 54 / 95%) 0%, rgb(47 56 54 / 88%) 58%, rgb(47 56 54 / 18%) 100%);
+}
+body.is-night .scroll-profile-facts,
+body.is-night .scroll-profile-facts div,
+body.is-night .scroll-reel-heading,
+body.is-night .scroll-reel-feature,
+body.is-night .scroll-reel-strip img { border-color: rgb(243 238 229 / 22%); }
+body.is-night .scroll-profile-facts strong { color: #eee8de; }
+body.is-night .scroll-profile-facts span,
+body.is-night .scroll-reel-heading,
+body.is-night .scroll-reel-feature span { color: #e39a8f; }
+body.is-night .scroll-reel-heading small,
+body.is-night .scroll-about-reel > p { color: #a8b2ab; }
+body.is-night .scroll-reel-feature { background: rgb(53 67 63 / 34%); box-shadow: 0 18px 40px rgb(8 14 13 / 20%); }
+body.is-night .scroll-reel-feature img,
+body.is-night .scroll-reel-strip img { filter: saturate(.62) brightness(.78) contrast(1.08); }
+@media (max-width: 720px) {
+  body.is-night .scroll-about::before {
+    background: linear-gradient(180deg, rgb(47 56 54 / 96%) 0%, rgb(47 56 54 / 88%) 72%, rgb(47 56 54 / 14%) 100%);
+  }
+}
 body.is-night .scroll-cue i,
 body.is-night .scroll-cue i::after { border-color: #e39a8f; background-color: #e39a8f; }
 body.is-night .scroll-shell ~ .site-header {
