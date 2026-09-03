@@ -66,8 +66,8 @@ const scrollCameraFrames = {
   about: {
     // The About section moves in close to the desk camera while the profile copy
     // and contact-sheet preview take over the left and right sides of the page.
-    position: new THREE.Vector3(6.2, 4.35, 5.1),
-    target: new THREE.Vector3(2.18, 2.95, -0.34),
+    position: new THREE.Vector3(7.3, 4.65, 4.2),
+    target: new THREE.Vector3(2.18, 3.02, -0.34),
   },
   projects: {
     position: new THREE.Vector3(-2.2, 4.2, 6.5),
@@ -131,6 +131,24 @@ const chair = createChair(materials);
 const deskObjects = createDeskObjects(materials);
 const floorPlant = createPlant(materials, [4.62, 0, -2.42], 1.02);
 scene.add(room, desk, computer, book, deskCamera, shelf, lamp, chair, deskObjects, floorPlant);
+
+const aboutStageObjects = [room, desk, computer, book, shelf, lamp, chair, deskObjects, floorPlant];
+const aboutStageOffsets = new Map([
+  [room, new THREE.Vector3(0, -18, 0)],
+  [desk, new THREE.Vector3(0, -14, 0)],
+  [computer, new THREE.Vector3(0, -12, 0)],
+  [book, new THREE.Vector3(0, -11, 0)],
+  [shelf, new THREE.Vector3(0, -13, 0)],
+  [lamp, new THREE.Vector3(0, -12, 0)],
+  [chair, new THREE.Vector3(0, -14, 0)],
+  [deskObjects, new THREE.Vector3(0, -12, 0)],
+  [floorPlant, new THREE.Vector3(0, -13, 0)],
+]);
+const aboutStageBases = new Map(aboutStageObjects.map((object) => [object, {
+  position: object.position.clone(),
+  scale: object.scale.clone(),
+}]));
+const aboutCameraBaseScale = deskCamera.scale.clone();
 
 const interactives = new Map([
   ["computer", computer],
@@ -200,6 +218,7 @@ const worldState = {
   shelfProgress: 0,
   nightProgress: 0,
   screenProgress: 0,
+  aboutIsolation: 0,
 };
 
 function mixVectorFrames(from, to, progress, target) {
@@ -228,6 +247,22 @@ function updateScrollProgress() {
     mixVectorFrames(aboutPosition, projectPosition, localProgress, scrollCameraPosition);
     mixVectorFrames(aboutTarget, projectTarget, localProgress, scrollCameraTarget);
   }
+}
+
+function updateAboutStage(delta) {
+  const centerDistance = Math.abs(scrollProgress - 0.5) / 0.25;
+  const isolationTarget = smoothstep(clamp01(1 - centerDistance));
+  worldState.aboutIsolation = damp(worldState.aboutIsolation, isolationTarget, 5.5, delta);
+  const isolation = worldState.aboutIsolation;
+
+  aboutStageObjects.forEach((object) => {
+    const base = aboutStageBases.get(object);
+    const offset = aboutStageOffsets.get(object);
+    object.position.lerpVectors(base.position, base.position.clone().add(offset), isolation);
+    object.scale.copy(base.scale).multiplyScalar(THREE.MathUtils.lerp(1, 0.84, isolation));
+  });
+
+  deskCamera.scale.lerp(aboutCameraBaseScale.clone().multiplyScalar(1.3), isolation);
 }
 
 function updateScrollCamera(delta) {
@@ -789,6 +824,7 @@ function animate(now) {
   const delta = Math.min(timer.getDelta(), 0.05);
   const elapsed = timer.getElapsed();
   updateScrollProgress();
+  updateAboutStage(delta);
   updateCamera(now);
   updateScrollCamera(delta);
   updateBook(delta);
